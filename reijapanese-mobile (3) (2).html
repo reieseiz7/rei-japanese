@@ -1,0 +1,2221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>れいJapanese</title>
+<style>
+:root {
+  color-scheme: light dark;
+
+  --rj-bg: #faf9f6;
+  --rj-surface: #ffffff;
+  --rj-surface-alt: #f3f1ea;
+  --rj-border: #e7e3da;
+  --rj-text: #2b2926;
+  --rj-text-soft: #6f6a61;
+  --rj-accent: #b83b3b;
+  --rj-accent-soft: #f4e4e0;
+  --rj-verb: #3b6ea5;
+  --rj-verb-bg: #e4edf7;
+  --rj-adj: #7a5ea8;
+  --rj-adj-bg: #ece5f5;
+  --rj-noun: #3b8f6d;
+  --rj-noun-bg: #e2f2ea;
+  --rj-note-bg: #fff8ec;
+  --rj-note-text: #8a6a1f;
+  --rj-note-border: #f1e2bc;
+  --rj-shadow: rgba(0, 0, 0, 0.05);
+  --rj-radius: 14px;
+  font-family: "Hiragino Sans", "Noto Sans JP", "Yu Gothic", "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --rj-bg: #17161a;
+    --rj-surface: #201f24;
+    --rj-surface-alt: #262529;
+    --rj-border: #38363c;
+    --rj-text: #ece9e4;
+    --rj-text-soft: #a8a39a;
+    --rj-accent: #e28b7d;
+    --rj-accent-soft: #3a2a29;
+    --rj-verb: #8fb8e6;
+    --rj-verb-bg: #23303f;
+    --rj-adj: #c1a8e8;
+    --rj-adj-bg: #2c2436;
+    --rj-noun: #8fd6b3;
+    --rj-noun-bg: #1f322a;
+    --rj-note-bg: #362d1c;
+    --rj-note-text: #e6c473;
+    --rj-note-border: #4d3f21;
+    --rj-shadow: rgba(0, 0, 0, 0.35);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  background: var(--rj-bg);
+}
+
+body {
+  margin: 0;
+  color: var(--rj-text);
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+.rj-header {
+  border-bottom: 1px solid var(--rj-border);
+  background: var(--rj-surface);
+}
+
+.rj-header-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 20px 18px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+}
+
+.rj-logo {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--rj-text);
+}
+
+.rj-logo-accent {
+  color: var(--rj-accent);
+}
+
+.rj-tagline {
+  font-size: 12.5px;
+  color: var(--rj-text-soft);
+}
+
+.rj-main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 22px 16px 60px;
+}
+
+.rj-search-section {
+  margin-bottom: 24px;
+}
+
+.rj-search-box {
+  display: flex;
+  align-items: center;
+  background: var(--rj-surface);
+  border: 1px solid var(--rj-border);
+  border-radius: var(--rj-radius);
+  padding: 12px 16px;
+  gap: 10px;
+  box-shadow: 0 1px 3px var(--rj-shadow);
+}
+
+.rj-search-icon { font-size: 16px; opacity: 0.7; flex-shrink: 0; }
+
+.rj-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: var(--rj-text);
+}
+
+.rj-search-input::placeholder {
+  color: var(--rj-text-soft);
+  opacity: 0.8;
+}
+
+.rj-search-hint {
+  margin: 8px 4px 0;
+  font-size: 12px;
+  color: var(--rj-text-soft);
+  line-height: 1.5;
+}
+
+.rj-empty-state {
+  text-align: center;
+  color: var(--rj-text-soft);
+  padding: 36px 16px;
+  font-size: 14px;
+}
+
+/* ---- Result Card ---- */
+
+.rj-card {
+  background: var(--rj-surface);
+  border: 1px solid var(--rj-border);
+  border-radius: var(--rj-radius);
+  padding: 20px;
+  margin-bottom: 18px;
+  overflow-wrap: anywhere;
+}
+
+.rj-word-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+
+.rj-word-kanji {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.4; /* room for furigana above without clipping */
+}
+
+.rj-word-kana {
+  font-size: 14.5px;
+  color: var(--rj-text-soft);
+}
+
+.rj-word-romaji {
+  font-size: 12.5px;
+  color: var(--rj-text-soft);
+  font-style: italic;
+}
+
+.rj-word-meaning {
+  font-size: 16.5px;
+  margin-top: 6px;
+  font-weight: 600;
+  color: var(--rj-accent);
+}
+
+.rj-badges {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.rj-badge {
+  font-size: 11.5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--rj-accent-soft);
+  color: var(--rj-accent);
+}
+
+.rj-badge.type-verb { background: var(--rj-verb-bg); color: var(--rj-verb); }
+.rj-badge.type-adjective { background: var(--rj-adj-bg); color: var(--rj-adj); }
+.rj-badge.type-noun { background: var(--rj-noun-bg); color: var(--rj-noun); }
+
+.rj-matched-note {
+  margin-top: 12px;
+  font-size: 12.5px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--rj-note-bg);
+  color: var(--rj-note-text);
+  border: 1px solid var(--rj-note-border);
+  line-height: 1.5;
+}
+
+.rj-section-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--rj-text-soft);
+  margin: 20px 0 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rj-border);
+}
+
+.rj-conj-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+}
+
+.rj-conj-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--rj-border);
+  font-size: 14px;
+  min-width: 0;
+}
+
+.rj-conj-label {
+  color: var(--rj-text-soft);
+  font-size: 12.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.rj-conj-value {
+  font-weight: 600;
+  text-align: right;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Example sentences ---- */
+/* Each example gets its own bordered block so the Japanese sentence and
+   the Indonesian translation never visually run together, on any theme
+   or screen width. */
+
+.rj-example {
+  background: var(--rj-surface-alt);
+  border: 1px solid var(--rj-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.rj-example-jp {
+  font-size: 16px;
+  line-height: 1.9; /* room for furigana */
+  color: var(--rj-text);
+}
+
+.rj-example-id {
+  font-size: 13px;
+  color: var(--rj-text-soft);
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--rj-border);
+  font-style: italic;
+}
+
+.rj-related-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rj-related-chip {
+  background: var(--rj-surface-alt);
+  border: 1px solid var(--rj-border);
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 13.5px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.rj-related-chip .meaning {
+  color: var(--rj-text-soft);
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.rj-ambiguous-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rj-no-result {
+  padding: 22px;
+  background: var(--rj-surface);
+  border: 1px solid var(--rj-border);
+  border-radius: var(--rj-radius);
+  color: var(--rj-text-soft);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+ruby {
+  margin: 0 1px;
+}
+
+ruby rt {
+  font-size: 10px;
+  color: var(--rj-text-soft);
+  user-select: none;
+}
+
+.rj-footer {
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--rj-text-soft);
+  padding: 20px 16px 36px;
+}
+
+/* ---- Small phones ---- */
+@media (max-width: 480px) {
+  .rj-card { padding: 16px; border-radius: 12px; }
+  .rj-word-kanji { font-size: 26px; }
+  .rj-conj-grid {
+    grid-template-columns: 1fr; /* single column: no cramped wrapping */
+    gap: 0;
+  }
+  .rj-conj-row { font-size: 13.5px; }
+  .rj-badges { gap: 6px; }
+}
+
+/* ---- 活用 (Conjugation) expandable rows ---- */
+
+.rj-conj-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.rj-conj-row--expandable {
+  cursor: pointer;
+  padding: 0;
+  border-bottom: 1px solid var(--rj-border);
+}
+
+.rj-conj-row--expandable:last-child {
+  border-bottom: none;
+}
+
+.rj-conj-row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 4px;
+  font-size: 14px;
+}
+
+.rj-conj-row--expandable:active,
+.rj-conj-row--open .rj-conj-row-top {
+  background: var(--rj-surface-alt);
+}
+
+.rj-level-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--rj-text-soft);
+  border: 1px solid var(--rj-border);
+  border-radius: 5px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+
+.rj-conj-detail {
+  padding: 4px 4px 12px;
+  background: var(--rj-surface-alt);
+  border-radius: 0 0 8px 8px;
+}
+
+.rj-conj-detail .rj-example-jp {
+  font-size: 15px;
+  line-height: 1.8;
+  padding: 0 10px;
+}
+
+.rj-conj-detail .rj-example-id {
+  font-size: 12.5px;
+  color: var(--rj-text-soft);
+  padding: 4px 10px 0;
+  border-top: none;
+  font-style: italic;
+}
+
+/* ---- Class picker (kata belum ada di database) ---- */
+
+.rj-classpicker {
+  margin-top: 14px;
+  padding: 16px;
+  background: var(--rj-surface);
+  border: 1px solid var(--rj-border);
+  border-radius: var(--rj-radius);
+}
+
+.rj-classpicker-title {
+  font-size: 13.5px;
+  color: var(--rj-text-soft);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.rj-classpicker-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rj-classpicker-btn {
+  font: inherit;
+  font-size: 13.5px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--rj-border);
+  background: var(--rj-surface-alt);
+  color: var(--rj-text);
+  cursor: pointer;
+}
+
+.rj-classpicker-btn:hover,
+.rj-classpicker-btn:active {
+  background: var(--rj-accent-soft);
+  border-color: var(--rj-accent);
+  color: var(--rj-accent);
+}
+
+</style>
+</head>
+<body>
+
+  <header class="rj-header">
+    <div class="rj-header-inner">
+      <span class="rj-logo">れい<span class="rj-logo-accent">Japanese</span></span>
+      <span class="rj-tagline">Kamus &amp; Konjugasi Bahasa Jepang</span>
+    </div>
+  </header>
+
+  <main class="rj-main">
+    <section class="rj-search-section">
+      <form id="rj-search-form" class="rj-search-box" autocomplete="off">
+        <span class="rj-search-icon">🔎</span>
+        <input
+          id="rj-search-input"
+          type="text"
+          placeholder="Cari kata... (食べる, たべる, taberu, makan, 食べなかった)"
+          class="rj-search-input"
+        />
+      </form>
+      <p class="rj-search-hint">Coba: 乗る · 渡る · 死ぬ · 付ける · 食べる · 書く · する · 来る · 高い · 静か</p>
+    </section>
+
+    <section id="rj-results" class="rj-results">
+      <div class="rj-empty-state">
+        <p>Masukkan kata bahasa Jepang dalam bentuk apa pun — kanji, kana, romaji, bentuk konjugasi, atau arti Indonesia. Kalau kata belum ada di database, Anda tetap bisa memilih kelas katanya untuk melihat konjugasinya.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rj-footer">
+    <p>れいJapanese &middot; Database lokal, berjalan sepenuhnya offline &middot; versi satu-file untuk HP</p>
+  </footer>
+
+  <script>
+/**
+ * れいJapanese — Local Vocabulary Database
+ *
+ * This file is the ONLY place raw vocabulary data lives. UI, search, and
+ * conjugation code never hard-code Japanese words — they all read from
+ * window.REI_DATA.vocabulary.
+ *
+ * Field notes:
+ *  - kanji: written form (may be identical to kana for kana-only words)
+ *  - kana:  full hiragana reading of the dictionary form
+ *  - romaji: romanized reading (best-effort, Hepburn-ish)
+ *  - meaning_id: Indonesian meaning of the bare dictionary form
+ *  - type: 'ichidan' | 'godan' | 'suru' | 'kuru' | 'i-adj' | 'na-adj' | 'noun'
+ *  - jlpt: JLPT level string if confidently known, otherwise null
+ *  - examples: [{ jp: "kanji[furigana] mixed string", id: "Indonesian translation" }]
+ *      Hand-written examples for the dictionary form / a couple of core forms.
+ *      Furigana notation: 漢字[かな] — only kanji clusters get bracketed
+ *      readings; okurigana (trailing kana) is left as-is.
+ *  - context: { jp, meaning } — a short natural clause PREFIX (subject/
+ *      object + particle, in the same furigana notation as `examples`)
+ *      used by the 活用 (conjugation) feature to auto-build one example
+ *      sentence for EVERY generated form: jp = context.jp + <generated
+ *      form> + "。", and its Indonesian gloss is context.meaning wrapped
+ *      in a per-pattern template (see js/conjugation/exampleTemplates.js).
+ *      context.meaning is the Indonesian translation of the FULL clause
+ *      in plain/dictionary aspect (e.g. "makan sarapan", not just "makan").
+ *      This is what lets the conjugation engine generate a real, correct
+ *      example for every single form/pattern without a huge hand-written
+ *      sentence bank per word.
+ *  - related: [{ word, meaning }] — only included where the relation is a
+ *      real, attested word, never invented for the sake of completeness.
+ *
+ * To grow the database later: append more objects to this array — the
+ * search and conjugation engines do not care how many entries there are.
+ * New entries should include `context` to get auto-generated per-form
+ * examples from the 活用 feature.
+ */
+
+(function () {
+  const vocabulary = [
+    // ---------------- ICHIDAN VERBS ----------------
+    {
+      id: "v_taberu",
+      kanji: "食べる",
+      kana: "たべる",
+      romaji: "taberu",
+      meaning_id: "makan",
+      type: "ichidan",
+      jlpt: "N5",
+      context: { jp: "朝[あさ]ご飯[はん]を", meaning: "makan sarapan" },
+      examples: [
+        { jp: "朝[あさ]ご飯[はん]を食[た]べる。", id: "Saya makan sarapan." },
+        { jp: "何[なに]か食[た]べたい。", id: "Saya ingin makan sesuatu." },
+      ],
+      related: [
+        { word: "食べ物[たべもの]", meaning: "makanan" },
+        { word: "食事[しょくじ]", meaning: "makan / santapan" },
+        { word: "食べ方[たべかた]", meaning: "cara makan" },
+        { word: "食べ過[す]ぎる", meaning: "makan berlebihan" },
+      ],
+    },
+    {
+      id: "v_miru",
+      kanji: "見る",
+      kana: "みる",
+      romaji: "miru",
+      meaning_id: "melihat / menonton",
+      type: "ichidan",
+      jlpt: "N5",
+      context: { jp: "映画[えいが]を", meaning: "menonton film" },
+      examples: [
+        { jp: "映画[えいが]を見[み]る。", id: "Saya menonton film." },
+        { jp: "テレビを見[み]ています。", id: "Saya sedang menonton TV." },
+      ],
+      related: [{ word: "見[み]せる", meaning: "memperlihatkan" }],
+    },
+    {
+      id: "v_okiru",
+      kanji: "起きる",
+      kana: "おきる",
+      romaji: "okiru",
+      meaning_id: "bangun tidur",
+      type: "ichidan",
+      jlpt: "N5",
+      context: { jp: "毎朝[まいあさ]六時[ろくじ]に", meaning: "bangun jam 6 setiap pagi" },
+      examples: [
+        { jp: "毎朝[まいあさ]六時[ろくじ]に起[お]きる。", id: "Saya bangun jam 6 setiap pagi." },
+        { jp: "今日[きょう]は早[はや]く起[お]きた。", id: "Hari ini saya bangun pagi-pagi." },
+      ],
+    },
+    {
+      id: "v_neru",
+      kanji: "寝る",
+      kana: "ねる",
+      romaji: "neru",
+      meaning_id: "tidur",
+      type: "ichidan",
+      jlpt: "N5",
+      context: { jp: "夜[よる]十一時[じゅういちじ]に", meaning: "tidur jam 11 malam" },
+      examples: [
+        { jp: "夜[よる]十一時[じゅういちじ]に寝[ね]る。", id: "Saya tidur jam 11 malam." },
+        { jp: "昨日[きのう]は早[はや]く寝[ね]た。", id: "Kemarin saya tidur cepat." },
+      ],
+    },
+    {
+      id: "v_tsukeru",
+      kanji: "付ける",
+      kana: "つける",
+      romaji: "tsukeru",
+      meaning_id: "memasang / menyalakan / menempelkan",
+      type: "ichidan",
+      jlpt: "N5",
+      context: { jp: "電気[でんき]を", meaning: "menyalakan lampu" },
+      examples: [
+        { jp: "電気[でんき]を付[つ]ける。", id: "Saya menyalakan lampu." },
+        { jp: "名前[なまえ]を付[つ]けた。", id: "Saya sudah memberi nama." },
+      ],
+      related: [{ word: "付[つ]く", meaning: "menempel / menyala (bentuk intransitif)" }],
+    },
+
+    // ---------------- GODAN VERBS ----------------
+    {
+      id: "v_kaku",
+      kanji: "書く",
+      kana: "かく",
+      romaji: "kaku",
+      meaning_id: "menulis",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "手紙[てがみ]を", meaning: "menulis surat" },
+      examples: [
+        { jp: "手紙[てがみ]を書[か]く。", id: "Saya menulis surat." },
+        { jp: "名前[なまえ]を書[か]いてください。", id: "Tolong tuliskan nama Anda." },
+      ],
+      related: [{ word: "書[か]き方[かた]", meaning: "cara menulis" }],
+    },
+    {
+      id: "v_yomu",
+      kanji: "読む",
+      kana: "よむ",
+      romaji: "yomu",
+      meaning_id: "membaca",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "本[ほん]を", meaning: "membaca buku" },
+      examples: [
+        { jp: "本[ほん]を読[よ]む。", id: "Saya membaca buku." },
+        { jp: "新聞[しんぶん]を読[よ]んでいます。", id: "Saya sedang membaca koran." },
+      ],
+    },
+    {
+      id: "v_hanasu",
+      kanji: "話す",
+      kana: "はなす",
+      romaji: "hanasu",
+      meaning_id: "berbicara",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "日本語[にほんご]を", meaning: "berbicara bahasa Jepang" },
+      examples: [
+        { jp: "日本語[にほんご]を話[はな]す。", id: "Saya berbicara bahasa Jepang." },
+        { jp: "友達[ともだち]と話[はな]した。", id: "Saya berbicara dengan teman." },
+      ],
+      related: [{ word: "話[はなし]", meaning: "cerita / obrolan" }],
+    },
+    {
+      id: "v_kau",
+      kanji: "買う",
+      kana: "かう",
+      romaji: "kau",
+      meaning_id: "membeli",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "新[あたら]しい靴[くつ]を", meaning: "membeli sepatu baru" },
+      examples: [
+        { jp: "新[あたら]しい靴[くつ]を買[か]う。", id: "Saya membeli sepatu baru." },
+        { jp: "昨日[きのう]りんごを買[か]った。", id: "Kemarin saya membeli apel." },
+      ],
+      related: [{ word: "買[か]い物[もの]", meaning: "belanja" }],
+    },
+    {
+      id: "v_matsu",
+      kanji: "待つ",
+      kana: "まつ",
+      romaji: "matsu",
+      meaning_id: "menunggu",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "友達[ともだち]を", meaning: "menunggu teman" },
+      examples: [
+        { jp: "友達[ともだち]を待[ま]つ。", id: "Saya menunggu teman." },
+        { jp: "バス停[てい]で待[ま]っている。", id: "Saya sedang menunggu di halte bus." },
+      ],
+    },
+    {
+      id: "v_nomu",
+      kanji: "飲む",
+      kana: "のむ",
+      romaji: "nomu",
+      meaning_id: "minum",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "水[みず]を", meaning: "minum air" },
+      examples: [
+        { jp: "水[みず]を飲[の]む。", id: "Saya minum air." },
+        { jp: "毎朝[まいあさ]コーヒーを飲[の]んでいます。", id: "Saya minum kopi setiap pagi." },
+      ],
+      related: [{ word: "飲[の]み物[もの]", meaning: "minuman" }],
+    },
+    {
+      id: "v_asobu",
+      kanji: "遊ぶ",
+      kana: "あそぶ",
+      romaji: "asobu",
+      meaning_id: "bermain",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "公園[こうえん]で", meaning: "bermain di taman" },
+      examples: [
+        { jp: "公園[こうえん]で遊[あそ]ぶ。", id: "Saya bermain di taman." },
+        { jp: "子供[こども]たちが遊[あそ]んでいる。", id: "Anak-anak sedang bermain." },
+      ],
+    },
+    {
+      id: "v_oyogu",
+      kanji: "泳ぐ",
+      kana: "およぐ",
+      romaji: "oyogu",
+      meaning_id: "berenang",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "プールで", meaning: "berenang di kolam" },
+      examples: [
+        { jp: "プールで泳[およ]ぐ。", id: "Saya berenang di kolam." },
+        { jp: "海[うみ]で泳[およ]いだ。", id: "Saya berenang di laut." },
+      ],
+    },
+    {
+      id: "v_shinu",
+      kanji: "死ぬ",
+      kana: "しぬ",
+      romaji: "shinu",
+      meaning_id: "mati",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "その犬[いぬ]は", meaning: "anjing itu mati" },
+      examples: [{ jp: "昔[むかし]、その犬[いぬ]は死[し]んだ。", id: "Dulu, anjing itu mati." }],
+    },
+    {
+      id: "v_kaeru",
+      kanji: "帰る",
+      kana: "かえる",
+      romaji: "kaeru",
+      meaning_id: "pulang",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "家[いえ]に", meaning: "pulang ke rumah" },
+      examples: [
+        { jp: "家[いえ]に帰[かえ]る。", id: "Saya pulang ke rumah." },
+        { jp: "何時[なんじ]に帰[かえ]りますか。", id: "Jam berapa Anda pulang?" },
+      ],
+    },
+    {
+      id: "v_hairu",
+      kanji: "入る",
+      kana: "はいる",
+      romaji: "hairu",
+      meaning_id: "masuk",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "部屋[へや]に", meaning: "masuk ke kamar" },
+      examples: [
+        { jp: "部屋[へや]に入[はい]る。", id: "Saya masuk ke kamar." },
+        { jp: "お風呂[ふろ]に入[はい]った。", id: "Saya mandi (masuk ke bak mandi)." },
+      ],
+    },
+    {
+      id: "v_hashiru",
+      kanji: "走る",
+      kana: "はしる",
+      romaji: "hashiru",
+      meaning_id: "berlari",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "公園[こうえん]を", meaning: "berlari di taman" },
+      examples: [
+        { jp: "公園[こうえん]を走[はし]る。", id: "Saya berlari di taman." },
+        { jp: "毎日[まいにち]走[はし]っています。", id: "Saya berlari setiap hari." },
+      ],
+    },
+    {
+      id: "v_iku",
+      kanji: "行く",
+      kana: "いく",
+      romaji: "iku",
+      meaning_id: "pergi",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "学校[がっこう]に", meaning: "pergi ke sekolah" },
+      examples: [
+        { jp: "学校[がっこう]に行[い]く。", id: "Saya pergi ke sekolah." },
+        { jp: "昨日[きのう]どこへも行[い]かなかった。", id: "Kemarin saya tidak pergi ke mana-mana." },
+      ],
+    },
+    {
+      id: "v_noru",
+      kanji: "乗る",
+      kana: "のる",
+      romaji: "noru",
+      meaning_id: "naik (kendaraan)",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "電車[でんしゃ]に", meaning: "naik kereta" },
+      examples: [
+        { jp: "電車[でんしゃ]に乗[の]る。", id: "Saya naik kereta." },
+        { jp: "バスに乗[の]りました。", id: "Saya sudah naik bis." },
+      ],
+      related: [
+        { word: "乗[の]り物[もの]", meaning: "kendaraan" },
+        { word: "乗[の]り換[か]える", meaning: "pindah kendaraan / transfer" },
+      ],
+    },
+    {
+      id: "v_wataru",
+      kanji: "渡る",
+      kana: "わたる",
+      romaji: "wataru",
+      meaning_id: "menyeberang / melintasi",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "橋[はし]を", meaning: "menyeberangi jembatan" },
+      examples: [
+        { jp: "橋[はし]を渡[わた]る。", id: "Saya menyeberangi jembatan." },
+        { jp: "道[みち]を渡[わた]った。", id: "Saya sudah menyeberang jalan." },
+      ],
+      related: [{ word: "渡[わた]す", meaning: "menyerahkan / memberikan (bentuk transitif)" }],
+    },
+    {
+      id: "v_aru",
+      kanji: "ある",
+      kana: "ある",
+      romaji: "aru",
+      meaning_id: "ada / berada (benda mati)",
+      type: "godan",
+      jlpt: "N5",
+      context: { jp: "机[つくえ]の上[うえ]にペンが", meaning: "ada pulpen di atas meja" },
+      examples: [
+        { jp: "机[つくえ]の上[うえ]にペンがある。", id: "Ada pulpen di atas meja." },
+        { jp: "テストは明日[あした]ではない。", id: "Tesnya bukan besok. (contoh な形容詞/名詞, bukan ある)" },
+      ],
+    },
+
+    // ---------------- IRREGULAR VERBS ----------------
+    {
+      id: "v_suru",
+      kanji: "する",
+      kana: "する",
+      romaji: "suru",
+      meaning_id: "melakukan",
+      type: "suru",
+      jlpt: "N5",
+      context: { jp: "勉強[べんきょう]を", meaning: "belajar" },
+      examples: [
+        { jp: "勉強[べんきょう]をする。", id: "Saya belajar." },
+        { jp: "宿題[しゅくだい]をした。", id: "Saya sudah mengerjakan PR." },
+      ],
+    },
+    {
+      id: "v_kuru",
+      kanji: "来る",
+      kana: "くる",
+      romaji: "kuru",
+      meaning_id: "datang",
+      type: "kuru",
+      jlpt: "N5",
+      context: { jp: "友達[ともだち]が家[いえ]に", meaning: "teman datang ke rumah" },
+      examples: [
+        { jp: "友達[ともだち]が家[いえ]に来[く]る。", id: "Teman saya datang ke rumah." },
+        { jp: "明日[あした]また来[き]てください。", id: "Silakan datang lagi besok." },
+      ],
+    },
+
+    // ---------------- I-ADJECTIVES ----------------
+    {
+      id: "a_takai",
+      kanji: "高い",
+      kana: "たかい",
+      romaji: "takai",
+      meaning_id: "tinggi / mahal",
+      type: "i-adj",
+      jlpt: "N5",
+      context: {
+        jp: "この時計[とけい]は",
+        meaning: "jam tangan ini mahal",
+        meaningNeg: "jam tangan ini tidak mahal",
+      },
+      examples: [
+        { jp: "この時計[とけい]は高[たか]い。", id: "Jam tangan ini mahal." },
+        { jp: "富士山[ふじさん]は高[たか]い。", id: "Gunung Fuji tinggi." },
+      ],
+    },
+    {
+      id: "a_yasui",
+      kanji: "安い",
+      kana: "やすい",
+      romaji: "yasui",
+      meaning_id: "murah",
+      type: "i-adj",
+      jlpt: "N5",
+      context: {
+        jp: "この店[みせ]は",
+        meaning: "toko ini murah",
+        meaningNeg: "toko ini tidak murah",
+      },
+      examples: [
+        { jp: "この店[みせ]は安[やす]い。", id: "Toko ini murah." },
+        { jp: "もっと安[やす]いのはありますか。", id: "Apakah ada yang lebih murah?" },
+      ],
+    },
+
+    // ---------------- NA-ADJECTIVE ----------------
+    {
+      id: "a_shizuka",
+      kanji: "静か",
+      kana: "しずか",
+      romaji: "shizuka",
+      meaning_id: "tenang / sepi",
+      type: "na-adj",
+      jlpt: "N5",
+      context: {
+        jp: "この部屋[へや]は",
+        meaning: "kamar ini tenang",
+        meaningNeg: "kamar ini tidak tenang",
+      },
+      examples: [
+        { jp: "この部屋[へや]は静[しず]かだ。", id: "Kamar ini tenang." },
+        { jp: "図書館[としょかん]で静[しず]かにしてください。", id: "Tolong tenang di perpustakaan." },
+      ],
+    },
+
+    // ---------------- NOUN ----------------
+    {
+      id: "n_gakusei",
+      kanji: "学生",
+      kana: "がくせい",
+      romaji: "gakusei",
+      meaning_id: "pelajar / mahasiswa",
+      type: "noun",
+      jlpt: "N5",
+      context: {
+        jp: "彼[かれ]は",
+        meaning: "dia adalah pelajar",
+        meaningNeg: "dia bukan pelajar",
+      },
+      examples: [
+        { jp: "私[わたし]は学生[がくせい]です。", id: "Saya adalah pelajar." },
+        { jp: "彼[かれ]は大学[だいがく]の学生[がくせい]だ。", id: "Dia adalah mahasiswa universitas." },
+      ],
+    },
+  ];
+
+  window.REI_DATA = window.REI_DATA || {};
+  window.REI_DATA.vocabulary = vocabulary;
+})();
+
+/**
+ * れいJapanese — Verb Conjugation Engine (活用エンジン)
+ *
+ * Handles: 一段動詞 (ichidan), 五段動詞 (godan, all 9 row endings),
+ * 不規則動詞 — サ変 (する) and カ変 (来る), including known exceptions:
+ *   - 行く: て/た form is 行って/行った, not the regular く-row いて/いた
+ *   - godan verbs ending in る (乗る/渡る/帰る/入る/走る...): never treated
+ *     as ichidan just because they end in る
+ *   - する: して/した, できる (not "しられる"), せずに (not "しずに")
+ *   - 来る: 来て/来た, 来られる, 来ずに — reading changes but is not
+ *     re-derived from a generic table
+ *   - ある: the plain negative is the suppletive ない, never あらない —
+ *     every negative-based form (なかった/なくて/ないで/ずに/etc.)
+ *     derives from that override, not from the regular godan a-row
+ *
+ * On top of the basic forms, this module also generates the compound
+ * grammar patterns commonly taught across JLPT N5–N1 (～ている, ～てみる,
+ * ～なければならない, ～そうだ, ～すぎる, ～ことができる, etc). Every one
+ * of these is built MECHANICALLY from the same handful of core pieces
+ * (辞書形 / ます-stem / て形 / ない-stem) — nothing here is looked up
+ * per-word, so the same engine works for any verb of a supported class,
+ * not just the words currently in the vocabulary database.
+ *
+ * A companion LEVELS export gives an approximate JLPT level per form,
+ * for display only — these are common textbook groupings, not an
+ * official JLPT classification, and are labelled as approximate in the UI.
+ */
+
+(function () {
+  const GODAN_TABLE = {
+    う: { a: "わ", i: "い", u: "う", e: "え", o: "お", te: "って", ta: "った" },
+    く: { a: "か", i: "き", u: "く", e: "け", o: "こ", te: "いて", ta: "いた" },
+    ぐ: { a: "が", i: "ぎ", u: "ぐ", e: "げ", o: "ご", te: "いで", ta: "いだ" },
+    す: { a: "さ", i: "し", u: "す", e: "せ", o: "そ", te: "して", ta: "した" },
+    つ: { a: "た", i: "ち", u: "つ", e: "て", o: "と", te: "って", ta: "った" },
+    ぬ: { a: "な", i: "に", u: "ぬ", e: "ね", o: "の", te: "んで", ta: "んだ" },
+    ぶ: { a: "ば", i: "び", u: "ぶ", e: "べ", o: "ぼ", te: "んで", ta: "んだ" },
+    む: { a: "ま", i: "み", u: "む", e: "め", o: "も", te: "んで", ta: "んだ" },
+    る: { a: "ら", i: "り", u: "る", e: "れ", o: "ろ", te: "って", ta: "った" },
+  };
+
+  // Irregular te/ta forms that don't follow the row default.
+  const TE_TA_EXCEPTIONS = { 行く: { te: "って", ta: "った" } };
+
+  // Suppletive negative: the plain negative is NOT the regular a-row + ない.
+  const NAI_EXCEPTIONS = { ある: "ない" };
+
+  function dropLast(str, n = 1) {
+    return str.slice(0, str.length - n);
+  }
+  function lastChar(str) {
+    return str.slice(-1);
+  }
+
+  function conjugateIchidan(entry) {
+    const dict = entry.kanji || entry.kana;
+    const stem = dropLast(dict);
+    const f = (suf) => stem + suf;
+    return buildFullTable({
+      dict,
+      naiForm: f("ない"),
+      masuForm: f("ます"),
+      teForm: f("て"),
+      taForm: f("た"),
+      potential: f("られる"),
+      passive: f("られる"),
+      causative: f("させる"),
+      causativePassive: f("させられる"),
+      volitional: f("よう"),
+      imperativeForm: f("ろ"),
+      conditionalBa: f("れば"),
+      zuForm: f("ずに"),
+    });
+  }
+
+  function conjugateGodan(entry) {
+    const dict = entry.kanji || entry.kana;
+    const kana = entry.kana;
+    const row = GODAN_TABLE[lastChar(kana)];
+    if (!row) return null;
+
+    const stem = dropLast(dict);
+    const teException = TE_TA_EXCEPTIONS[dict];
+    const teSuffix = teException ? teException.te : row.te;
+    const taSuffix = teException ? teException.ta : row.ta;
+
+    const naiException = NAI_EXCEPTIONS[dict];
+    const naiForm = naiException || stem + row.a + "ない";
+    // zuForm/ずに derives from the SAME base as the negative, so a
+    // suppletive negative (ある→ない) also gets a correctly-derived ずに.
+    const naiBase = naiException ? naiException.slice(0, -2) : stem + row.a;
+    const zuForm = naiBase + "ずに";
+
+    return buildFullTable({
+      dict,
+      naiForm,
+      masuForm: stem + row.i + "ます",
+      teForm: stem + teSuffix,
+      taForm: stem + taSuffix,
+      potential: stem + row.e + "る",
+      passive: stem + row.a + "れる",
+      causative: stem + row.a + "せる",
+      causativePassive: stem + row.a + "せられる",
+      volitional: stem + row.o + "う",
+      imperativeForm: stem + row.e,
+      conditionalBa: stem + row.e + "ば",
+      zuForm,
+    });
+  }
+
+  function conjugateSuru(entry) {
+    const dict = entry.kanji || entry.kana;
+    const stem = dict.endsWith("する") ? dropLast(dict, 2) : "";
+    const f = (suf) => stem + suf;
+    return buildFullTable({
+      dict,
+      naiForm: f("しない"),
+      masuForm: f("します"),
+      teForm: f("して"),
+      taForm: f("した"),
+      potential: f("できる"),
+      passive: f("される"),
+      causative: f("させる"),
+      causativePassive: f("させられる"),
+      volitional: f("しよう"),
+      imperativeForm: f("しろ"),
+      imperativeAlt: f("せよ"),
+      conditionalBa: f("すれば"),
+      zuForm: f("せずに"), // irregular: せずに, never "しずに"
+    });
+  }
+
+  function conjugateKuru(entry) {
+    const dict = entry.kanji || entry.kana;
+    const stem = dict.endsWith("来る")
+      ? dropLast(dict, 2)
+      : dict.endsWith("くる")
+      ? dropLast(dict, 2)
+      : "";
+    const f = (suf) => stem + suf;
+    return buildFullTable({
+      dict,
+      naiForm: f("来ない"),
+      masuForm: f("来ます"),
+      teForm: f("来て"),
+      taForm: f("来た"),
+      potential: f("来られる"),
+      passive: f("来られる"),
+      causative: f("来させる"),
+      causativePassive: f("来させられる"),
+      volitional: f("来よう"),
+      imperativeForm: f("来い"),
+      conditionalBa: f("来れば"),
+      zuForm: f("来ずに"), // read こずに, written 来ずに
+    });
+  }
+
+  /**
+   * Given the core irregular pieces of a verb, derive EVERY other form —
+   * base forms and compound grammar patterns alike — mechanically.
+   */
+  function buildFullTable(p) {
+    const naiStem = p.naiForm.slice(0, -2); // strip trailing 'ない'
+    const masuStem = p.masuForm.slice(0, -2); // strip trailing 'ます'
+    const nakuteForm = naiStem + "なくて";
+
+    const potentialNegative = p.potential.endsWith("できる")
+      ? p.potential.slice(0, -3) + "できない"
+      : p.potential.slice(0, -1) + "ない";
+
+    return {
+      // ---- 基本形 ----
+      辞書形: p.dict,
+      ます形: p.masuForm,
+      ません形: masuStem + "ません",
+      ました形: masuStem + "ました",
+      ませんでした形: masuStem + "ませんでした",
+
+      // ---- 否定 ----
+      ない形: p.naiForm,
+      なかった形: naiStem + "なかった",
+      なくて形: nakuteForm,
+
+      // ---- て／た ----
+      て形: p.teForm,
+      た形: p.taForm,
+      ている形: p.teForm + "いる",
+      ていた形: p.teForm + "いた",
+      ていない形: p.teForm + "いない",
+      ていなかった形: p.teForm + "いなかった",
+      てしまう形: p.teForm + "しまう",
+      てしまった形: p.teForm + "しまった",
+      ておく形: p.teForm + "おく",
+      ておいた形: p.teForm + "おいた",
+      てみる形: p.teForm + "みる",
+      てみた形: p.teForm + "みた",
+      てくる形: p.teForm + "くる",
+      てきた形: p.teForm + "きた",
+      ていく形: p.teForm + "いく",
+      ていった形: p.teForm + "いった",
+      てあげる形: p.teForm + "あげる",
+      てもらう形: p.teForm + "もらう",
+      てくれる形: p.teForm + "くれる",
+      てもいい形: p.teForm + "もいい",
+      てはいけない形: p.teForm + "はいけない",
+
+      // ---- 可能 / 受身 / 使役 ----
+      可能形: p.potential,
+      可能否定形: potentialNegative,
+      受身形: p.passive,
+      受身否定形: p.passive.slice(0, -1) + "ない",
+      使役形: p.causative,
+      使役否定形: p.causative.slice(0, -1) + "ない",
+      使役受身形: p.causativePassive,
+
+      // ---- 意向 / 命令 / 禁止 ----
+      意向形: p.volitional,
+      命令形: p.imperativeAlt ? `${p.imperativeForm} / ${p.imperativeAlt}` : p.imperativeForm,
+      禁止形: p.dict + "な",
+
+      // ---- 条件 ----
+      ば形: p.conditionalBa,
+      たら形: p.taForm + "ら",
+      なら形: p.dict + "なら",
+
+      // ---- 否定の応用形 ----
+      ないで形: naiStem + "ないで",
+      なくてもいい形: nakuteForm + "もいい",
+      なければならない形: naiStem + "なければならない",
+      なくてはいけない形: nakuteForm + "はいけない",
+      ないといけない形: p.naiForm + "といけない",
+      ずに形: p.zuForm,
+
+      // ---- 推量 / 伝聞 / 様態 ----
+      "そうだ形（様態）": masuStem + "そうだ",
+      ようだ形: p.dict + "ようだ",
+      らしい形: p.dict + "らしい",
+      みたいだ形: p.dict + "みたいだ",
+
+      // ---- 程度 ----
+      すぎる形: masuStem + "すぎる",
+      やすい形: masuStem + "やすい",
+      にくい形: masuStem + "にくい",
+
+      // ---- アスペクト（開始・終了・継続） ----
+      始める形: masuStem + "始める",
+      終わる形: masuStem + "終わる",
+      続ける形: masuStem + "続ける",
+
+      // ---- 可能・変化の表現 ----
+      ことができる形: p.dict + "ことができる",
+      ことになる形: p.dict + "ことになる",
+      ことにする形: p.dict + "ことにする",
+      ようになる形: p.dict + "ようになる",
+      ようにする形: p.dict + "ようにする",
+    };
+  }
+
+  function conjugate(entry) {
+    switch (entry.type) {
+      case "ichidan":
+        return conjugateIchidan(entry);
+      case "godan":
+        return conjugateGodan(entry);
+      case "suru":
+        return conjugateSuru(entry);
+      case "kuru":
+        return conjugateKuru(entry);
+      default:
+        return null;
+    }
+  }
+
+  // Approximate JLPT level per form label — for display only. These are
+  // common textbook groupings (Genki / Minna no Nihongo style), not an
+  // official JLPT classification.
+  const LEVELS = {
+    辞書形: "N5", ます形: "N5", ません形: "N5", ました形: "N5", ませんでした形: "N5",
+    ない形: "N5", なかった形: "N5", なくて形: "N4",
+    て形: "N5", た形: "N5", ている形: "N5", ていた形: "N5", ていない形: "N5",
+    ていなかった形: "N4", てしまう形: "N4", てしまった形: "N4",
+    ておく形: "N4", ておいた形: "N4", てみる形: "N4", てみた形: "N4",
+    てくる形: "N4", てきた形: "N4", ていく形: "N4", ていった形: "N4",
+    てあげる形: "N4", てもらう形: "N4", てくれる形: "N4",
+    てもいい形: "N5", てはいけない形: "N5",
+    可能形: "N4", 可能否定形: "N4", 受身形: "N4", 受身否定形: "N4",
+    使役形: "N4", 使役否定形: "N4", 使役受身形: "N3",
+    意向形: "N4", 命令形: "N4", 禁止形: "N4",
+    ば形: "N4", たら形: "N4", なら形: "N4",
+    ないで形: "N4", なくてもいい形: "N4", なければならない形: "N4",
+    なくてはいけない形: "N4", ないといけない形: "N3", ずに形: "N3",
+    "そうだ形（様態）": "N3", ようだ形: "N3", らしい形: "N3", みたいだ形: "N3",
+    すぎる形: "N4", やすい形: "N4", にくい形: "N4",
+    始める形: "N4", 終わる形: "N4", 続ける形: "N3",
+    ことができる形: "N4", ことになる形: "N3", ことにする形: "N3",
+    ようになる形: "N3", ようにする形: "N3",
+  };
+
+  window.REI_CONJ = window.REI_CONJ || {};
+  window.REI_CONJ.verb = { conjugate, LEVELS };
+})();
+
+/**
+ * れいJapanese — Adjective Conjugation Engine (活用エンジン)
+ *
+ * Handles い形容詞 (i-adjectives) and な形容詞 (na-adjectives), including
+ * both base forms and the compound patterns learners meet through
+ * JLPT N5–N1 (～そう, ～すぎる, ～ようだ, ～らしい, ～みたいだ, etc).
+ *
+ * な-adjective entries are stored WITHOUT the だ (e.g. "静か"), matching
+ * how they are cited in dictionaries — the だ/です/... copula forms are
+ * generated here, not stored per-word.
+ *
+ * Important nuance handled correctly: ようだ attaches differently
+ * depending on word class —
+ *   - い形容詞 / 動詞: dictionary form + ようだ  (高いようだ)
+ *   - な形容詞:       stem + なようだ            (静かなようだ, NOT 静かようだ)
+ *   - 名詞:           stem + のようだ            (see nounConjugator.js)
+ * らしい and みたいだ attach directly to the bare stem for な形容詞/名詞
+ * (静からしい / 静かみたいだ) with no な in between — getting this wrong
+ * would produce ungrammatical output, so it is handled explicitly rather
+ * than reusing one blanket suffix rule for every pattern.
+ */
+
+(function () {
+  // Known irregular i-adjective: いい/良い conjugates from the base よい.
+  const I_ADJ_BASE_OVERRIDE = { いい: "よい", 良い: "よい" };
+
+  function conjugateIAdjective(entry) {
+    const dict = entry.kanji || entry.kana;
+    const base = I_ADJ_BASE_OVERRIDE[dict] || dict;
+    const stem = base.slice(0, -1); // drop trailing い
+    const f = (suf) => stem + suf;
+
+    return {
+      辞書形: dict,
+      "否定形（〜くない）": f("くない"),
+      "過去形（〜かった）": f("かった"),
+      "過去否定形（〜くなかった）": f("くなかった"),
+      "て形（〜くて）": f("くて"),
+      "ば形（〜ければ）": f("ければ"),
+      "たら形（〜かったら）": f("かったら"),
+      "副詞形（〜く）": f("く"),
+      "副詞形＋なる（〜くなる）": f("くなる"),
+      "副詞形＋ならない（〜くならない）": f("くならない"),
+      "副詞形＋なった（〜くなった）": f("くなった"),
+      "使役的変化（〜くする）": f("くする"),
+      "様態（〜そう）": f("そう"),
+      "程度（〜すぎる）": f("すぎる"),
+      "丁寧形（です）": dict + "です",
+      "丁寧否定形（〜くありません）": f("くありません"),
+      "丁寧過去形（〜かったです）": f("かったです"),
+      ようだ形: dict + "ようだ",
+      らしい形: dict + "らしい",
+      みたいだ形: dict + "みたいだ",
+    };
+  }
+
+  function conjugateNaAdjective(entry) {
+    const stem = entry.kanji || entry.kana; // e.g. 静か
+    const f = (suf) => stem + suf;
+
+    return {
+      "辞書形（〜だ）": f("だ"),
+      "否定形（〜ではない）": f("ではない"),
+      "口語否定形（〜じゃない）": f("じゃない"),
+      "過去形（〜だった）": f("だった"),
+      "過去否定形（〜ではなかった）": f("ではなかった"),
+      "口語過去否定形（〜じゃなかった）": f("じゃなかった"),
+      "て形（〜で）": f("で"),
+      "なら形": f("なら"),
+      "たら形（〜だったら）": f("だったら"),
+      "副詞形（〜に）": f("に"),
+      "副詞形＋になる": f("になる"),
+      "副詞形＋にならない": f("にならない"),
+      "副詞形＋になった": f("になった"),
+      "使役的変化（〜にする）": f("にする"),
+      "様態（〜そう）": f("そう"),
+      "程度（〜すぎる）": f("すぎる"),
+      "丁寧形（です）": f("です"),
+      "丁寧否定形（〜ではありません）": f("ではありません"),
+      "丁寧過去形（〜でした）": f("でした"),
+      "丁寧過去否定形（〜ではありませんでした）": f("ではありませんでした"),
+      // な-adjective nuance: ようだ needs な, but らしい/みたいだ attach bare.
+      ようだ形: f("なようだ"),
+      らしい形: f("らしい"),
+      みたいだ形: f("みたいだ"),
+    };
+  }
+
+  function conjugate(entry) {
+    if (entry.type === "i-adj") return conjugateIAdjective(entry);
+    if (entry.type === "na-adj") return conjugateNaAdjective(entry);
+    return null;
+  }
+
+  const LEVELS = {
+    辞書形: "N5", "否定形（〜くない）": "N5", "過去形（〜かった）": "N5",
+    "過去否定形（〜くなかった）": "N5", "て形（〜くて）": "N5",
+    "ば形（〜ければ）": "N4", "たら形（〜かったら）": "N4",
+    "副詞形（〜く）": "N5", "副詞形＋なる（〜くなる）": "N4",
+    "副詞形＋ならない（〜くならない）": "N4", "副詞形＋なった（〜くなった）": "N4",
+    "使役的変化（〜くする）": "N4", "様態（〜そう）": "N3", "程度（〜すぎる）": "N4",
+    "丁寧形（です）": "N5", "丁寧否定形（〜くありません）": "N5",
+    "丁寧過去形（〜かったです）": "N5",
+    "辞書形（〜だ）": "N5", "否定形（〜ではない）": "N5", "口語否定形（〜じゃない）": "N5",
+    "過去形（〜だった）": "N5", "過去否定形（〜ではなかった）": "N5",
+    "口語過去否定形（〜じゃなかった）": "N5", "て形（〜で）": "N5", なら形: "N4",
+    "たら形（〜だったら）": "N4", "副詞形（〜に）": "N5", "副詞形＋になる": "N4",
+    "副詞形＋にならない": "N4", "副詞形＋になった": "N4", "使役的変化（〜にする）": "N4",
+    "丁寧否定形（〜ではありません）": "N5", "丁寧過去形（〜でした）": "N5",
+    "丁寧過去否定形（〜ではありませんでした）": "N5",
+    ようだ形: "N3", らしい形: "N3", みたいだ形: "N3",
+  };
+
+  window.REI_CONJ = window.REI_CONJ || {};
+  window.REI_CONJ.adjective = { conjugate, LEVELS };
+})();
+
+/**
+ * れいJapanese — Noun Copula Conjugation Engine
+ *
+ * Nouns don't conjugate themselves in Japanese, but the copula attached
+ * to them (だ/です) does, and learners search for these forms just like
+ * verb/adjective forms, so れいJapanese generates them the same way.
+ *
+ * ようだ/らしい/みたいだ nuance for nouns: ようだ needs の in between
+ * (学生のようだ, NOT 学生ようだ); らしい and みたいだ attach directly to
+ * the bare noun (学生らしい / 学生みたいだ).
+ */
+
+(function () {
+  function conjugate(entry) {
+    const stem = entry.kanji || entry.kana;
+    const f = (suf) => stem + suf;
+
+    return {
+      辞書形: stem,
+      "普通形（〜だ）": f("だ"),
+      "否定形（〜ではない）": f("ではない"),
+      "口語否定形（〜じゃない）": f("じゃない"),
+      "過去形（〜だった）": f("だった"),
+      "過去否定形（〜ではなかった）": f("ではなかった"),
+      "口語過去否定形（〜じゃなかった）": f("じゃなかった"),
+      "丁寧形（です）": f("です"),
+      "丁寧否定形（〜ではありません）": f("ではありません"),
+      "丁寧過去形（〜でした）": f("でした"),
+      "丁寧過去否定形（〜ではありませんでした）": f("ではありませんでした"),
+      ようだ形: f("のようだ"),
+      らしい形: f("らしい"),
+      みたいだ形: f("みたいだ"),
+    };
+  }
+
+  const LEVELS = {
+    辞書形: "N5", "普通形（〜だ）": "N5", "否定形（〜ではない）": "N5",
+    "口語否定形（〜じゃない）": "N5", "過去形（〜だった）": "N5",
+    "過去否定形（〜ではなかった）": "N5", "口語過去否定形（〜じゃなかった）": "N5",
+    "丁寧形（です）": "N5", "丁寧否定形（〜ではありません）": "N5",
+    "丁寧過去形（〜でした）": "N5", "丁寧過去否定形（〜ではありませんでした）": "N5",
+    ようだ形: "N3", らしい形: "N3", みたいだ形: "N3",
+  };
+
+  window.REI_CONJ = window.REI_CONJ || {};
+  window.REI_CONJ.noun = { conjugate, LEVELS };
+})();
+
+/**
+ * れいJapanese — Conjugation Engine Dispatcher
+ *
+ * Single entry point used by search and UI code: given a vocabulary
+ * entry, return { kind, table } where kind is 'verb' | 'adjective' | 'noun'
+ * and table is a { label: form } map. Returns null for unsupported types
+ * instead of guessing.
+ *
+ * Also exposes getLevel(kind, label) so the UI can show an approximate
+ * JLPT badge per row without needing to know which sub-module owns
+ * which label.
+ */
+
+(function () {
+  function conjugateAll(entry) {
+    switch (entry.type) {
+      case "ichidan":
+      case "godan":
+      case "suru":
+      case "kuru":
+        return { kind: "verb", table: window.REI_CONJ.verb.conjugate(entry) };
+      case "i-adj":
+      case "na-adj":
+        return { kind: "adjective", table: window.REI_CONJ.adjective.conjugate(entry) };
+      case "noun":
+        return { kind: "noun", table: window.REI_CONJ.noun.conjugate(entry) };
+      default:
+        return null;
+    }
+  }
+
+  function getLevel(kind, label) {
+    const levelMap =
+      kind === "verb"
+        ? window.REI_CONJ.verb.LEVELS
+        : kind === "adjective"
+        ? window.REI_CONJ.adjective.LEVELS
+        : kind === "noun"
+        ? window.REI_CONJ.noun.LEVELS
+        : null;
+    return (levelMap && levelMap[label]) || null;
+  }
+
+  window.REI_CONJ = window.REI_CONJ || {};
+  window.REI_CONJ.engine = { conjugateAll, getLevel };
+})();
+
+/**
+ * れいJapanese — Example Sentence Templates for 活用 (Conjugation Forms)
+ *
+ * The spec behind the 活用 feature requires EVERY displayed form to come
+ * with an example sentence. Hand-writing one sentence per (word × form)
+ * would mean hundreds of sentences per word and wouldn't scale to new
+ * vocabulary at all — so instead this module generates them:
+ *
+ *   Japanese sentence = entry.context.jp + <the generated form> + "。"
+ *   Indonesian gloss   = a per-FORM template with {VP} filled in by
+ *                        entry.context.meaning (the Indonesian meaning
+ *                        of the whole clause in its plain/dictionary
+ *                        aspect, e.g. "makan sarapan")
+ *
+ * This keeps every sentence grammatically real (built from the same
+ * verified conjugation engine, not invented per form) while scaling to
+ * any word that has a `context` field — new vocabulary automatically
+ * gets full example coverage across every pattern without writing new
+ * sentences by hand.
+ *
+ * If a word has no `context` (not expected for current DB entries, but
+ * kept as a safe fallback), the example degrades gracefully to just the
+ * bare form + a generic gloss using entry.meaning_id, rather than
+ * fabricating an object/subject that was never confirmed.
+ */
+
+(function () {
+  function cap(str) {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  const VERB_TEMPLATES = {
+    辞書形: "{VP}",
+    ます形: "{VP}. (bentuk sopan)",
+    ません形: "tidak {VP}. (bentuk sopan)",
+    ました形: "sudah {VP}. (bentuk sopan)",
+    ませんでした形: "tidak {VP}. (bentuk sopan, lampau)",
+    ない形: "tidak {VP}",
+    なかった形: "tidak {VP} (lampau)",
+    なくて形: "tidak {VP}, dan...",
+    て形: "{VP}, lalu...",
+    た形: "sudah {VP}",
+    ている形: "sedang {VP}",
+    ていた形: "sedang {VP} (saat itu)",
+    ていない形: "tidak sedang {VP}",
+    ていなかった形: "tidak sedang {VP} (saat itu)",
+    てしまう形: "{VP} sampai tuntas",
+    てしまった形: "sudah {VP} (tuntas, kadang menyesal)",
+    ておく形: "{VP} duluan (sebagai persiapan)",
+    ておいた形: "sudah {VP} duluan (sebagai persiapan)",
+    てみる形: "coba {VP}",
+    てみた形: "sudah coba {VP}",
+    てくる形: "{VP} (lalu kembali / mulai terjadi)",
+    てきた形: "sudah {VP} (lalu kembali / mulai terjadi)",
+    ていく形: "{VP} (lalu pergi / akan berlanjut)",
+    ていった形: "sudah {VP} (lalu pergi / berlanjut)",
+    てあげる形: "{VP} untuk orang lain",
+    てもらう形: "minta tolong untuk {VP}",
+    てくれる形: "(dia) {VP} untuk saya",
+    てもいい形: "boleh {VP}",
+    てはいけない形: "tidak boleh {VP}",
+    可能形: "bisa {VP}",
+    可能否定形: "tidak bisa {VP}",
+    受身形: "di-{VP} (bentuk pasif)",
+    受身否定形: "tidak di-{VP} (bentuk pasif)",
+    使役形: "menyuruh/membiarkan (seseorang) {VP}",
+    使役否定形: "tidak menyuruh (seseorang) {VP}",
+    使役受身形: "disuruh {VP} (terpaksa)",
+    意向形: "ayo {VP}",
+    命令形: "{VP}! (bentuk perintah)",
+    禁止形: "jangan {VP}!",
+    ば形: "kalau {VP}, ...",
+    たら形: "kalau sudah {VP}, ...",
+    なら形: "kalau memang {VP}, ...",
+    ないで形: "tanpa {VP}",
+    なくてもいい形: "tidak perlu {VP}",
+    なければならない形: "harus {VP}",
+    なくてはいけない形: "harus {VP}",
+    ないといけない形: "harus {VP}",
+    ずに形: "tanpa {VP}",
+    "そうだ形（様態）": "kelihatannya (akan) {VP}",
+    ようだ形: "sepertinya {VP}",
+    らしい形: "katanya {VP}",
+    みたいだ形: "sepertinya {VP} (santai)",
+    すぎる形: "{VP} secara berlebihan",
+    やすい形: "mudah untuk {VP}",
+    にくい形: "sulit untuk {VP}",
+    始める形: "mulai {VP}",
+    終わる形: "selesai {VP}",
+    続ける形: "terus {VP}",
+    ことができる形: "bisa {VP}",
+    ことになる形: "menjadi keputusan bahwa akan {VP}",
+    ことにする形: "memutuskan untuk {VP}",
+    ようになる形: "menjadi bisa/terbiasa {VP}",
+    ようにする形: "berusaha untuk {VP}",
+  };
+
+  // Adjective/noun sentences read more naturally as "keadaan X" rather
+  // than "melakukan X" — {VP} here is a state/description, e.g.
+  // "kamar ini tenang", so templates are phrased accordingly.
+  const STATE_TEMPLATES = {
+    辞書形: "{VP}",
+    "否定形（〜くない）": "{VP-tidak}",
+    "過去形（〜かった）": "{VP} (tadinya)",
+    "過去否定形（〜くなかった）": "{VP-tidak} (tadinya)",
+    "て形（〜くて）": "{VP}, dan...",
+    "ば形（〜ければ）": "kalau {VP}, ...",
+    "たら形（〜かったら）": "kalau {VP} (nanti), ...",
+    "副詞形（〜く）": "secara begitu ({VP}, bentuk keterangan)",
+    "副詞形＋なる（〜くなる）": "menjadi {VP}",
+    "副詞形＋ならない（〜くならない）": "tidak menjadi {VP}",
+    "副詞形＋なった（〜くなった）": "sudah menjadi {VP}",
+    "使役的変化（〜くする）": "membuat (sesuatu) menjadi {VP}",
+    "様態（〜そう）": "kelihatannya {VP}",
+    "程度（〜すぎる）": "{VP} secara berlebihan",
+    "丁寧形（です）": "{VP}. (bentuk sopan)",
+    "丁寧否定形（〜くありません）": "{VP-tidak}. (bentuk sopan)",
+    "丁寧過去形（〜かったです）": "{VP} (tadinya, bentuk sopan)",
+    "辞書形（〜だ）": "{VP}",
+    "否定形（〜ではない）": "{VP-tidak}",
+    "口語否定形（〜じゃない）": "{VP-tidak} (santai)",
+    "過去形（〜だった）": "{VP} (tadinya)",
+    "過去否定形（〜ではなかった）": "{VP-tidak} (tadinya)",
+    "口語過去否定形（〜じゃなかった）": "{VP-tidak} (tadinya, santai)",
+    "て形（〜で）": "{VP}, dan...",
+    なら形: "kalau memang {VP}, ...",
+    "たら形（〜だったら）": "kalau {VP} (nanti), ...",
+    "副詞形（〜に）": "secara begitu ({VP}, bentuk keterangan)",
+    "副詞形＋になる": "menjadi {VP}",
+    "副詞形＋にならない": "tidak menjadi {VP}",
+    "副詞形＋になった": "sudah menjadi {VP}",
+    "使役的変化（〜にする）": "membuat (sesuatu) menjadi {VP}",
+    "丁寧否定形（〜ではありません）": "{VP-tidak}. (bentuk sopan)",
+    "丁寧過去形（〜でした）": "{VP} (tadinya, bentuk sopan)",
+    "丁寧過去否定形（〜ではありませんでした）": "{VP-tidak} (tadinya, bentuk sopan)",
+    ようだ形: "sepertinya {VP}",
+    らしい形: "katanya {VP}",
+    みたいだ形: "sepertinya {VP} (santai)",
+
+    // noun-specific labels
+    "普通形（〜だ）": "{VP}",
+  };
+
+  /**
+   * entry.context.meaning is phrased as a full plain clause, e.g.
+   * "kamar ini tenang" (subject + predicate) for adjectives/nouns, or
+   * a verb phrase like "makan sarapan" for verbs. A simple "tidak " +
+   * meaning prefix reads fine for verb phrases ("tidak makan sarapan")
+   * but is wrong for subject+predicate clauses ("tidak kamar ini
+   * tenang" instead of "kamar ini tidak tenang"). So: adjective/noun
+   * entries carry an explicit context.meaningNeg for correct negation;
+   * verb entries (no meaningNeg needed) fall back to the prefix form.
+   */
+  function negate(context) {
+    if (context && context.meaningNeg) return context.meaningNeg;
+    const meaning = context ? context.meaning : "";
+    return "tidak " + meaning;
+  }
+
+  function fillTemplate(template, meaning, negMeaning) {
+    return template.replace("{VP-tidak}", negMeaning).replace("{VP}", meaning);
+  }
+
+  /**
+   * Build one example for a given (entry, kind, label, generated form).
+   * Returns { jp, id } or null if the label has no known template.
+   */
+  function buildExample(entry, kind, label, formSurface) {
+    const templateMap = kind === "verb" ? VERB_TEMPLATES : STATE_TEMPLATES;
+    const template = templateMap[label];
+    if (!template) return null;
+
+    const context = entry.context;
+    const meaning = context ? context.meaning : entry.meaning_id;
+    if (!meaning) return null; // no known meaning yet (ad-hoc word) — don't fabricate one
+    const negMeaning = negate(context || { meaning });
+    const jpPrefix = context ? context.jp : "";
+
+    const jp = `${jpPrefix}${formSurface}。`;
+    const id =
+      cap(fillTemplate(template, meaning, negMeaning)) + (template.endsWith("...") ? "" : ".");
+
+    return { jp, id };
+  }
+
+  window.REI_EXAMPLES = { buildExample };
+})();
+
+/**
+ * れいJapanese — Search Engine
+ *
+ * Core idea (important for accuracy): れいJapanese never tries to
+ * "regex-guess" what a conjugated form used to be. Instead, for every
+ * word in the database it FORWARD-GENERATES the full conjugation table
+ * (using the same engine that powers the conjugation display) and checks
+ * whether the user's query exactly matches one of those generated forms.
+ *
+ * This means every match is provably correct — it was produced by the
+ * real conjugation rules, not pattern-matched blindly on the input. If
+ * more than one dictionary entry could produce the same surface form,
+ * all of them are returned so the UI can show every possibility instead
+ * of silently picking one.
+ */
+
+(function () {
+  function normalize(str) {
+    return (str || "").trim();
+  }
+
+  function matchesDictionaryForm(entry, query) {
+    return entry.kanji === query || entry.kana === query;
+  }
+
+  function findConjugatedMatches(query) {
+    const vocabulary = window.REI_DATA.vocabulary;
+    const hits = [];
+
+    vocabulary.forEach((entry) => {
+      const conjugated = window.REI_CONJ.engine.conjugateAll(entry);
+      if (!conjugated) return;
+
+      for (const [label, form] of Object.entries(conjugated.table)) {
+        // Some labels (命令形 for する) may contain " / " combining two
+        // valid surface forms — check each separately.
+        const candidates = form.split(" / ");
+        if (candidates.includes(query)) {
+          hits.push({ entry, matchedLabel: label, matchedForm: form });
+          break; // one match per entry is enough to surface it
+        }
+      }
+    });
+
+    return hits;
+  }
+
+  function findPartialMatches(query) {
+    const vocabulary = window.REI_DATA.vocabulary;
+    const q = query.toLowerCase();
+
+    return vocabulary.filter((entry) => {
+      return (
+        (entry.kanji && entry.kanji.includes(query)) ||
+        (entry.kana && entry.kana.includes(query)) ||
+        (entry.romaji && entry.romaji.toLowerCase() === q) ||
+        (entry.romaji && entry.romaji.toLowerCase().includes(q) && q.length >= 2) ||
+        (entry.meaning_id && entry.meaning_id.toLowerCase().includes(q))
+      );
+    });
+  }
+
+  /**
+   * Main search function.
+   * Returns:
+   *  {
+   *    status: 'exact' | 'conjugated' | 'partial' | 'not_found',
+   *    results: [{ entry, matchedLabel? , matchedForm? }],
+   *    note: string | null   // shown to the user for ambiguous/uncertain cases
+   *  }
+   */
+  function search(rawQuery) {
+    const query = normalize(rawQuery);
+    if (!query) {
+      return { status: "empty", results: [], note: null };
+    }
+
+    const vocabulary = window.REI_DATA.vocabulary;
+
+    // 1. Exact dictionary-form match (kanji or kana).
+    const exact = vocabulary.filter((e) => matchesDictionaryForm(e, query));
+    if (exact.length > 0) {
+      return {
+        status: "exact",
+        results: exact.map((entry) => ({ entry })),
+        note:
+          exact.length > 1
+            ? "Analisis mungkin memiliki beberapa kemungkinan — beberapa kata cocok dengan bentuk ini."
+            : null,
+      };
+    }
+
+    // 2. Try to recognize this as a conjugated form of something in the DB.
+    const conjugatedHits = findConjugatedMatches(query);
+    if (conjugatedHits.length > 0) {
+      const distinctEntries = new Set(conjugatedHits.map((h) => h.entry.id));
+      return {
+        status: "conjugated",
+        results: conjugatedHits,
+        note:
+          distinctEntries.size > 1
+            ? "Analisis mungkin memiliki beberapa kemungkinan — bentuk ini bisa berasal dari lebih dari satu kata dasar."
+            : null,
+      };
+    }
+
+    // 3. Partial / romaji / meaning search.
+    const partial = findPartialMatches(query);
+    if (partial.length > 0) {
+      return {
+        status: "partial",
+        results: partial.map((entry) => ({ entry })),
+        note:
+          partial.length > 1
+            ? null
+            : null,
+      };
+    }
+
+    // 4. Nothing found — be honest instead of fabricating a result.
+    return {
+      status: "not_found",
+      results: [],
+      note:
+        "Kata tidak ditemukan di database lokal saat ini. Analisis mungkin memiliki beberapa kemungkinan yang belum tercakup — coba bentuk dasar kata, atau periksa ejaan.",
+    };
+  }
+
+  /**
+   * Build a minimal entry object for a word that isn't in the database,
+   * so the conjugation engine (which only needs {kanji, kana, type}) can
+   * still run on it. Used when the person picks a word class manually
+   * after a search comes back not_found — see js/ui/app.js.
+   *
+   * This is intentionally NOT added to window.REI_DATA.vocabulary: it's
+   * a one-off, in-memory object, not a new "database" entry. It carries
+   * no meaning/examples because those were never confirmed — the UI and
+   * exampleTemplates.js both know to degrade gracefully when meaning_id
+   * is absent, rather than inventing a meaning or example sentence.
+   */
+  function buildAdHocEntry(rawWord, type) {
+    const word = normalize(rawWord);
+    return {
+      id: "adhoc_" + word,
+      kanji: word,
+      kana: word,
+      romaji: null,
+      meaning_id: null,
+      type,
+      jlpt: null,
+      context: null,
+      examples: [],
+      related: [],
+      adhoc: true,
+    };
+  }
+
+  window.REI_SEARCH = { search, buildAdHocEntry };
+})();
+
+/**
+ * れいJapanese — Rendering
+ *
+ * Pure functions that turn search results into DOM nodes. No search or
+ * conjugation logic lives here — this file only knows how to draw.
+ *
+ * Every conjugation/pattern row is clickable: tapping it expands an
+ * auto-generated example sentence (see exampleTemplates.js) along with
+ * an approximate JLPT badge, matching the "kamus konjugasi" style asked
+ * for in the 活用 feature.
+ */
+
+(function () {
+  const VERB_SECTIONS = [
+    { title: "基本形", keys: ["辞書形", "ます形", "ません形", "ました形", "ませんでした形"] },
+    { title: "否定 (Negative)", keys: ["ない形", "なかった形", "なくて形"] },
+    {
+      title: "て／た形",
+      keys: ["て形", "た形", "ている形", "ていた形", "ていない形", "ていなかった形", "てしまう形", "てしまった形"],
+    },
+    { title: "可能形 (Potential)", keys: ["可能形", "可能否定形"] },
+    { title: "受身形 (Passive)", keys: ["受身形", "受身否定形"] },
+    { title: "使役形 (Causative)", keys: ["使役形", "使役否定形"] },
+    { title: "使役受身形 (Causative Passive)", keys: ["使役受身形"] },
+    { title: "意向形 (Volitional)", keys: ["意向形"] },
+    { title: "命令形 (Imperative)", keys: ["命令形", "禁止形"] },
+    { title: "条件形 (Conditional)", keys: ["ば形", "たら形", "なら形"] },
+    {
+      title: "て形の応用パターン (Compound て-patterns)",
+      keys: [
+        "ておく形", "ておいた形", "てみる形", "てみた形", "てくる形", "てきた形",
+        "ていく形", "ていった形", "てあげる形", "てもらう形", "てくれる形",
+        "てもいい形", "てはいけない形",
+      ],
+    },
+    {
+      title: "否定の応用形 (Negative patterns)",
+      keys: ["ないで形", "なくてもいい形", "なければならない形", "なくてはいけない形", "ないといけない形", "ずに形"],
+    },
+    { title: "推量・伝聞 (Conjecture / Hearsay)", keys: ["そうだ形（様態）", "ようだ形", "らしい形", "みたいだ形"] },
+    { title: "程度 (Degree)", keys: ["すぎる形", "やすい形", "にくい形"] },
+    { title: "アスペクト (Start / End / Continue)", keys: ["始める形", "終わる形", "続ける形"] },
+    {
+      title: "可能・変化の表現 (Ability / Change)",
+      keys: ["ことができる形", "ことになる形", "ことにする形", "ようになる形", "ようにする形"],
+    },
+  ];
+
+  const CLASS_OPTIONS = [
+    { label: "五段動詞", type: "godan" },
+    { label: "一段動詞", type: "ichidan" },
+    { label: "サ変動詞（する）", type: "suru" },
+    { label: "カ変動詞（来る）", type: "kuru" },
+    { label: "い形容詞", type: "i-adj" },
+    { label: "な形容詞", type: "na-adj" },
+  ];
+
+  function renderClassPicker(rawQuery, onPick) {
+    const container = el("div", "rj-classpicker");
+    container.appendChild(
+      el(
+        "div",
+        "rj-classpicker-title",
+        `Kata "${rawQuery}" belum ada di database. Pilih kelas katanya untuk tetap melihat pola konjugasinya:`
+      )
+    );
+    const btnRow = el("div", "rj-classpicker-buttons");
+    CLASS_OPTIONS.forEach((opt) => {
+      const btn = el("button", "rj-classpicker-btn", opt.label);
+      btn.type = "button";
+      btn.addEventListener("click", () => onPick(opt.type));
+      btnRow.appendChild(btn);
+    });
+    container.appendChild(btnRow);
+    return container;
+  }
+
+  function el(tag, className, children) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (children) {
+      (Array.isArray(children) ? children : [children]).forEach((c) => {
+        if (c == null) return;
+        node.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+      });
+    }
+    return node;
+  }
+
+  // Convert "漢字[かな]" furigana notation into <ruby> markup.
+  function renderFurigana(text) {
+    const wrapper = document.createElement("span");
+    const pattern = /([^\[\]]+)\[([^\[\]]+)\]/g;
+    let lastIndex = 0;
+    let match;
+    while ((match = pattern.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        wrapper.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      }
+      const ruby = document.createElement("ruby");
+      ruby.appendChild(document.createTextNode(match[1]));
+      const rt = document.createElement("rt");
+      rt.textContent = match[2];
+      ruby.appendChild(rt);
+      wrapper.appendChild(ruby);
+      lastIndex = pattern.lastIndex;
+    }
+    if (lastIndex < text.length) {
+      wrapper.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+    return wrapper;
+  }
+
+  function typeLabel(type) {
+    const map = {
+      ichidan: "一段動詞",
+      godan: "五段動詞",
+      suru: "サ変動詞（する）",
+      kuru: "カ変動詞（来る）",
+      "i-adj": "い形容詞",
+      "na-adj": "な形容詞",
+      noun: "名詞",
+    };
+    return map[type] || type;
+  }
+
+  function typeCategory(type) {
+    if (["ichidan", "godan", "suru", "kuru"].includes(type)) return "verb";
+    if (["i-adj", "na-adj"].includes(type)) return "adjective";
+    return "noun";
+  }
+
+  function renderLevelBadge(level) {
+    if (!level) return null;
+    return el("span", "rj-level-badge", level);
+  }
+
+  // A conjugation row that expands in place to show an auto-generated
+  // example sentence + JLPT badge when tapped.
+  function renderExpandableConjRow(entry, kind, label, value) {
+    const row = el("div", "rj-conj-row rj-conj-row--expandable");
+    const top = el("div", "rj-conj-row-top", [
+      el("span", "rj-conj-label", label),
+      el("span", "rj-conj-value", value),
+    ]);
+    row.appendChild(top);
+
+    const level = window.REI_CONJ.engine.getLevel(kind, label);
+    if (level) top.insertBefore(renderLevelBadge(level), top.lastChild);
+
+    const detail = el("div", "rj-conj-detail");
+    detail.style.display = "none";
+    row.appendChild(detail);
+
+    let expanded = false;
+    row.addEventListener("click", () => {
+      expanded = !expanded;
+      if (expanded && detail.childNodes.length === 0) {
+        // Split on " / " for rows like 命令形 that hold two valid surface forms.
+        const surfaceForm = value.split(" / ")[0];
+        const example = window.REI_EXAMPLES.buildExample(entry, kind, label, surfaceForm);
+        if (example) {
+          detail.appendChild(el("div", "rj-example-jp", renderFurigana(example.jp)));
+          detail.appendChild(el("div", "rj-example-id", example.id));
+        } else {
+          detail.appendChild(
+            el("div", "rj-example-id", "Contoh kalimat belum tersedia untuk bentuk ini.")
+          );
+        }
+      }
+      detail.style.display = expanded ? "block" : "none";
+      row.classList.toggle("rj-conj-row--open", expanded);
+    });
+
+    return row;
+  }
+
+  function renderConjugationTable(entry, kind, table) {
+    const container = el("div");
+
+    if (kind === "verb") {
+      const usedKeys = new Set();
+      VERB_SECTIONS.forEach((section) => {
+        const rows = section.keys
+          .filter((k) => k in table)
+          .map((k) => {
+            usedKeys.add(k);
+            return renderExpandableConjRow(entry, kind, k, table[k]);
+          });
+        if (rows.length === 0) return;
+        container.appendChild(el("div", "rj-section-title", section.title));
+        container.appendChild(el("div", "rj-conj-list", rows));
+      });
+      const leftoverRows = Object.keys(table)
+        .filter((k) => !usedKeys.has(k))
+        .map((k) => renderExpandableConjRow(entry, kind, k, table[k]));
+      if (leftoverRows.length > 0) {
+        container.appendChild(el("div", "rj-section-title", "その他"));
+        container.appendChild(el("div", "rj-conj-list", leftoverRows));
+      }
+    } else {
+      const rows = Object.entries(table).map(([k, v]) => renderExpandableConjRow(entry, kind, k, v));
+      container.appendChild(el("div", "rj-conj-list", rows));
+    }
+
+    return container;
+  }
+
+  function renderExamples(examples) {
+    if (!examples || examples.length === 0) return null;
+    const container = el("div");
+    container.appendChild(el("div", "rj-section-title", "例文 (Contoh Kalimat Kosakata)"));
+    examples.forEach((ex) => {
+      const block = el("div", "rj-example", [
+        el("div", "rj-example-jp", renderFurigana(ex.jp)),
+        el("div", "rj-example-id", ex.id),
+      ]);
+      container.appendChild(block);
+    });
+    return container;
+  }
+
+  function renderRelated(related) {
+    if (!related || related.length === 0) return null;
+    const container = el("div");
+    container.appendChild(el("div", "rj-section-title", "関連語 (Kosakata Terkait)"));
+    const list = el(
+      "div",
+      "rj-related-list",
+      related.map((r) => {
+        const chip = el("span", "rj-related-chip");
+        chip.appendChild(renderFurigana(r.word));
+        chip.appendChild(el("span", "meaning", `— ${r.meaning}`));
+        return chip;
+      })
+    );
+    container.appendChild(list);
+    return container;
+  }
+
+  function renderWordCard(entry, matchedForm) {
+    const card = el("div", "rj-card");
+
+    const headChildren = [el("div", "rj-word-kanji", renderFurigana(entry.kanji))];
+    if (entry.kana && entry.kana !== entry.kanji) {
+      headChildren.push(el("div", "rj-word-kana", entry.kana));
+    }
+    if (entry.romaji) {
+      headChildren.push(el("div", "rj-word-romaji", entry.romaji));
+    }
+    headChildren.push(
+      el("div", "rj-word-meaning", entry.meaning_id || "(arti belum diketahui)")
+    );
+    card.appendChild(el("div", "rj-word-head", headChildren));
+
+    const badges = el("div", "rj-badges", [
+      el("span", `rj-badge type-${typeCategory(entry.type)}`, typeLabel(entry.type)),
+    ]);
+    if (entry.jlpt) {
+      badges.appendChild(el("span", "rj-badge", `語彙 JLPT ${entry.jlpt}`));
+    }
+    card.appendChild(badges);
+
+    if (entry.adhoc) {
+      card.appendChild(
+        el(
+          "div",
+          "rj-matched-note",
+          `⚠ Kata ini belum ada di database れいJapanese, jadi arti dan contoh kalimat aslinya belum bisa dipastikan. Bentuk konjugasi di bawah dihasilkan otomatis dari aturan ${typeLabel(
+            entry.type
+          )} yang Anda pilih — akurat secara tata bahasa, tapi bukan hasil verifikasi kosakata.`
+        )
+      );
+    }
+
+    if (matchedForm) {
+      card.appendChild(
+        el(
+          "div",
+          "rj-matched-note",
+          `Bentuk yang Anda cari (${matchedForm.matchedForm}) adalah ${matchedForm.matchedLabel} dari kata dasar di atas.`
+        )
+      );
+    }
+
+    const conjugated = window.REI_CONJ.engine.conjugateAll(entry);
+    if (conjugated) {
+      card.appendChild(el("div", "rj-section-title", "活用 (Konjugasi) — tap untuk lihat contoh"));
+      card.appendChild(renderConjugationTable(entry, conjugated.kind, conjugated.table));
+    }
+
+    const examplesNode = renderExamples(entry.examples);
+    if (examplesNode) card.appendChild(examplesNode);
+
+    const relatedNode = renderRelated(entry.related);
+    if (relatedNode) card.appendChild(relatedNode);
+
+    return card;
+  }
+
+  function renderResults(container, searchResult, options) {
+    const opts = options || {};
+    container.innerHTML = "";
+
+    if (searchResult.status === "empty") {
+      container.appendChild(
+        el(
+          "div",
+          "rj-empty-state",
+          "Masukkan kata bahasa Jepang dalam bentuk apa pun — kanji, kana, romaji, bentuk konjugasi, atau arti Indonesia."
+        )
+      );
+      return;
+    }
+
+    if (searchResult.status === "not_found") {
+      container.appendChild(el("div", "rj-no-result", searchResult.note));
+      if (opts.onPickClass && opts.rawQuery) {
+        container.appendChild(renderClassPicker(opts.rawQuery, opts.onPickClass));
+      }
+      return;
+    }
+
+    if (searchResult.note) {
+      container.appendChild(el("div", "rj-matched-note", searchResult.note));
+    }
+
+    const list = el("div", "rj-ambiguous-list");
+    searchResult.results.forEach((r) => {
+      list.appendChild(renderWordCard(r.entry, r.matchedLabel ? r : null));
+    });
+    container.appendChild(list);
+  }
+
+  window.REI_UI = window.REI_UI || {};
+  window.REI_UI.render = { renderResults };
+})();
+
+/**
+ * れいJapanese — App Controller
+ *
+ * Wires up the DOM: reads the search box, calls the search engine, and
+ * hands the result to the renderer. Also handles the "kata belum ada di
+ * database" fallback: if the person picks a word class from the class
+ * picker, an ad-hoc entry is built for their exact input and run through
+ * the same conjugation engine as any database word — so the 活用
+ * feature works for any base word, not just the ones currently seeded.
+ */
+
+(function () {
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("rj-search-form");
+    const input = document.getElementById("rj-search-input");
+    const results = document.getElementById("rj-results");
+
+    function showAdHoc(rawQuery, type) {
+      const entry = window.REI_SEARCH.buildAdHocEntry(rawQuery, type);
+      const adHocResult = {
+        status: "adhoc",
+        results: [{ entry }],
+        note:
+          "Kata ini belum ada di database, jadi arti dan contoh kalimat aslinya belum bisa dipastikan — yang ditampilkan adalah pola konjugasi berdasarkan kelas kata yang Anda pilih.",
+      };
+      window.REI_UI.render.renderResults(results, adHocResult);
+    }
+
+    function runSearch() {
+      const rawQuery = input.value;
+      const result = window.REI_SEARCH.search(rawQuery);
+      window.REI_UI.render.renderResults(results, result, {
+        rawQuery: rawQuery.trim(),
+        onPickClass: (type) => showAdHoc(rawQuery.trim(), type),
+      });
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      runSearch();
+    });
+
+    // Live search as the user types (debounced) feels better for a
+    // dictionary tool than requiring an explicit submit every time.
+    let debounceTimer = null;
+    input.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(runSearch, 180);
+    });
+  });
+})();
+
+  </script>
+
+</body>
+</html>
